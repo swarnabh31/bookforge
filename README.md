@@ -83,38 +83,42 @@ preview · edit · assistant · export (PDF / EPUB / Markdown / project)
 - **Python 3.10+**
 - **[Ollama](https://ollama.com/download) 0.35 or newer** running locally
   (0.35+ is needed for the `/v1/systemone` decision endpoint)
-- Enough RAM/VRAM for your chosen models. A quantized 20B writer model needs roughly 16 GB of
-  memory; smaller models work fine and are much faster.
+- Enough RAM/VRAM for your chosen models. Large models need a lot of memory; smaller ones work fine
+  and are much faster.
 
 ### Models
 
-Book Forge uses three roles. The sidebar lets you pick any installed model for each one; the app
-pre-selects these defaults when they are installed:
+Book Forge does **not** ship or require specific models. At startup it asks your Ollama install
+which models you already have and fills the sidebar dropdowns with them — whatever you have pulled
+is what you can choose from. No model names need to be configured anywhere.
 
-| Role | Default preference | Purpose |
+Each book uses three roles:
+
+| Role | What it is used for | What to pick |
 | --- | --- | --- |
-| **Decision** | `nimble:9b`, `nimble` | Structured choices and yes/no faithfulness checks (never writes prose) |
-| **Writer** | `gpt-oss:20b`, `gemma4:12b` | Titling, polishing, chapter titles, preface and glossary |
-| **Embedding** | `mimic`, `nomic-embed-text` | Chunking, retrieval for the assistant, fidelity scoring |
+| **Decision** | Structured choices and yes/no faithfulness checks (never writes prose) | A small, fast, instruction-following model |
+| **Writer** | Titling, polishing, chapter titles, preface and glossary | The strongest general-purpose model you can run comfortably |
+| **Embedding** | Chunking, retrieval for the assistant, fidelity scoring | Any embedding-capable model |
 
-If none of the preferred names are installed, the first installed model is used, so make sure the
-roles you pick actually fit the job (a decision model for decisions, an embedding model for embeddings).
+All three dropdowns are populated from `ollama list` every time the app starts. If a commonly used
+model is installed, the app may pre-select it as a convenience, otherwise it defaults to the first
+installed model — always check the three dropdowns before you start, since a chat model won't work
+for embeddings and a tiny model may not be strong enough to write well.
 
-Pull the defaults with:
+To add a model, pull any you like with Ollama:
 
 ```bash
-ollama pull nimble:9b
-ollama pull gpt-oss:20b
-ollama pull nomic-embed-text
+ollama list            # see what is installed
+ollama pull <model>    # add another one
 ```
 
-> Model names and availability change. Check `ollama list` and pick whatever your Ollama install
-> provides; the app never hard-codes a model you don't have.
+Then refresh the app and it will appear in the dropdowns.
+
 
 ## Installation
 
 ```bash
-git clone https://github.com/<your-user>/bookforge.git
+git clone https://github.com/swarnabh31/bookforge.git
 cd bookforge
 
 python -m venv .venv
@@ -224,7 +228,7 @@ Generated books, exports and `.bookforge.json` projects are git-ignored — they
 | Symptom | Fix |
 | --- | --- |
 | "Can't reach Ollama" | Start it with `ollama serve`, confirm `ollama list` works, then refresh the page. |
-| Decision call fails | You need Ollama 0.35+ for `/v1/systemone`, and a decision-capable model (e.g. `nimble`) selected. |
+| Decision call fails | You need Ollama 0.35+ for `/v1/systemone`, and a decision-capable model selected in the sidebar. |
 | Rewrites are slow | Lower *Parallel passages*, use a smaller writer model, or run Ollama with `OLLAMA_NUM_PARALLEL` matching the slider. |
 | Out of memory | Reduce the context length, use a smaller/quantized model, or lower parallelism. |
 | Passages "could not be rewritten" | The fidelity gate rejected them and the original text was kept. Try a stronger writer model or a larger context. |
@@ -254,4 +258,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, style and pull-request guideli
 
 ## License
 
-[MIT](LICENSE) © Book Forge contributors
+[MIT](LICENSE) © 2026 Swarnabh

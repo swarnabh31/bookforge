@@ -6,7 +6,7 @@ is deliberately small.
 ## Getting set up
 
 ```bash
-git clone https://github.com/<your-user>/bookforge.git
+git clone https://github.com/swarnabh31/bookforge.git
 cd bookforge
 python -m venv .venv
 # Windows
